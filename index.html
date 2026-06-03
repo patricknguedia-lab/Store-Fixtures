@@ -33,9 +33,17 @@ header{background:var(--dark);color:#fff;padding:0 16px;display:flex;align-items
   padding:7px 12px;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;
   cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap}
 .btn-hdr:active{background:rgba(255,255,255,.25)}
+.btn-lang{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);
+  padding:7px 11px;border-radius:7px;font-family:'DM Mono',monospace;font-weight:500;font-size:12px;
+  cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.btn-lang:active{background:rgba(255,255,255,.25)}
 .btn-menu{display:none;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
   color:#fff;width:36px;height:36px;border-radius:7px;font-size:18px;cursor:pointer;
   align-items:center;justify-content:center}
+.btn-lang{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;
+  padding:7px 11px;border-radius:7px;font-family:'DM Mono',monospace;font-weight:500;font-size:12px;
+  cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.btn-lang:active{background:rgba(255,255,255,.25)}
 .cart-btn{background:var(--red);color:#fff;border:none;padding:8px 14px;border-radius:7px;
   font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;
   display:flex;align-items:center;gap:6px;white-space:nowrap}
@@ -381,10 +389,11 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
   </div>
   <div class="header-actions">
     <button class="btn-menu" onclick="toggleSidebar()">☰</button>
-    <button class="btn-hdr" onclick="openHistory()">📜 <span class="btn-lbl">Historique</span></button>
-    <button class="btn-hdr admin-btn" onclick="openAdmin()">⚙️ <span class="btn-lbl">Gérer la base</span></button>
+    <button class="btn-lang" id="btnLang" onclick="toggleLang()" title="Langue / Language">🌐 <span id="langLabel">FR</span></button>
+    <button class="btn-hdr" onclick="openHistory()">📜 <span class="btn-lbl" data-i18n="nav.history">Historique</span></button>
+    <button class="btn-hdr admin-btn" onclick="openAdmin()">⚙️ <span class="btn-lbl" data-i18n="nav.manage">Gérer la base</span></button>
     <button class="cart-btn" onclick="toggleCart()">
-      🛒 <span>Commande</span>
+      🛒 <span data-i18n="nav.order">Commande</span>
       <span class="cart-count" id="cartCount">0</span>
     </button>
   </div>
@@ -396,23 +405,23 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
   <!-- SIDEBAR avec multi-filtre catégories -->
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-section">
-      <span class="sidebar-label">Catégories</span>
+      <span class="sidebar-label" data-i18n="side.categories">Catégories</span>
       <button class="cat-all-btn active" id="catAllBtn" onclick="toggleAllCats()">
-        🗂 Tout afficher <span style="margin-left:auto;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)" id="cnt-all">0</span>
+        🗂 <span data-i18n="side.showAll">Tout afficher</span> <span style="margin-left:auto;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)" id="cnt-all">0</span>
       </button>
     </div>
     <hr class="sidebar-divider">
     <div class="cat-checks" id="catChecks"></div>
     <div style="padding:6px 14px 4px">
-      <button class="clear-cats-btn" id="clearCatsBtn" onclick="clearCatFilters()">✕ Effacer filtres</button>
+      <button class="clear-cats-btn" id="clearCatsBtn" onclick="clearCatFilters()">✕ <span data-i18n="side.clearFilters">Effacer filtres</span></button>
     </div>
   </nav>
 
   <main>
     <div class="search-bar">
-      <input class="search-input" type="text" id="searchInput" placeholder="🔍 Rechercher…" oninput="applyFilters()">
+      <input class="search-input" type="text" id="searchInput" data-i18n-ph="main.search" placeholder="🔍 Rechercher…" oninput="applyFilters()">
       <select class="sup-filter" id="supFilter" onchange="applyFilters()">
-        <option value="">Tous fournisseurs</option>
+        <option value="" data-i18n="main.allSuppliers">Tous fournisseurs</option>
       </select>
     </div>
     <div class="filter-bar">
@@ -423,21 +432,21 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
       <div class="table-scroll">
         <table>
           <thead><tr>
-            <th>Photo</th><th>Réf. SF</th><th>Description</th>
-            <th>Fournisseur</th><th>Réf. Fourn.</th><th>Cmd par</th>
-            <th>Catégorie</th><th title="Stock minimum — alerte visuelle si dépassé">⚠️ Stock min</th>
-            <th>Qté</th><th></th>
+            <th data-i18n="col.photo">Photo</th><th data-i18n="col.sfRef">Réf. SF</th><th data-i18n="col.desc">Description</th>
+            <th data-i18n="col.supplier">Fournisseur</th><th data-i18n="col.supRef">Réf. Fourn.</th><th data-i18n="col.orderedBy">Cmd par</th>
+            <th data-i18n="col.category">Catégorie</th><th><span data-i18n="col.stockMin">⚠️ Stock min</span></th>
+            <th data-i18n="col.qty">Qté</th><th></th>
           </tr></thead>
           <tbody id="tableBody"></tbody>
         </table>
       </div>
       <div class="empty" id="emptyState" style="display:none">
-        <div style="font-size:36px;margin-bottom:8px">🔍</div><div>Aucun article trouvé</div>
+        <div style="font-size:36px;margin-bottom:8px">🔍</div><div data-i18n="main.noItems">Aucun article trouvé</div>
       </div>
     </div>
     <div class="card-list" id="cardList"></div>
     <div id="emptyStateCard" style="display:none;padding:40px 0;text-align:center;color:var(--muted)">
-      <div style="font-size:36px;margin-bottom:8px">🔍</div><div>Aucun article trouvé</div>
+      <div style="font-size:36px;margin-bottom:8px">🔍</div><div data-i18n="main.noItems">Aucun article trouvé</div>
     </div>
   </main>
 </div>
@@ -446,19 +455,19 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
 <div class="history-overlay" id="historyOverlay">
   <div class="history-panel">
     <div class="history-hdr">
-      <div class="history-title">📜 Historique des commandes</div>
+      <div class="history-title" data-i18n="hist.title">📜 Historique des commandes</div>
       <button class="close-btn" onclick="closeHistory()">✕</button>
     </div>
     <div class="history-body" id="historyBody">
       <div class="history-empty">
         <div class="history-empty-icon">📭</div>
-        <div>Aucune commande dans l'historique.</div>
-        <div style="margin-top:6px;font-size:11px;color:#9ca3af">Les bons de commande envoyés apparaîtront ici.</div>
+        <div data-i18n="hist.empty">Aucune commande dans l'historique.</div>
+        <div style="margin-top:6px;font-size:11px;color:#9ca3af" data-i18n="hist.emptyHint">Les bons de commande envoyés apparaîtront ici.</div>
       </div>
     </div>
     <div class="history-footer">
       <div class="history-footer-info" id="historyFooterInfo"></div>
-      <button class="btn-clear-history" onclick="clearHistory()">🗑 Tout effacer</button>
+      <button class="btn-clear-history" onclick="clearHistory()" data-i18n="hist.clearAll">🗑 Tout effacer</button>
     </div>
   </div>
 </div>
@@ -469,65 +478,65 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
     <div class="admin-hdr">
       <div class="admin-hdr-left">
         <div class="admin-icon">⚙️</div>
-        <div><div class="admin-title">Gestion de la base</div>
-          <div class="admin-subtitle">Ajouter, modifier, supprimer</div></div>
+        <div><div class="admin-title" data-i18n="admin.title">Gestion de la base</div>
+          <div class="admin-subtitle" data-i18n="admin.subtitle">Ajouter, modifier, supprimer</div></div>
       </div>
       <button class="admin-close" onclick="closeAdmin()">✕</button>
     </div>
     <div class="admin-tabs">
-      <button class="admin-tab active" id="tab-add" onclick="switchAdminTab('add')">➕ Ajouter</button>
-      <button class="admin-tab" id="tab-manage" onclick="switchAdminTab('manage')">📋 Gérer</button>
+      <button class="admin-tab active" id="tab-add" onclick="switchAdminTab('add')" data-i18n="admin.tabAdd">➕ Ajouter</button>
+      <button class="admin-tab" id="tab-manage" onclick="switchAdminTab('manage')" data-i18n="admin.tabManage">📋 Gérer</button>
     </div>
     <div class="admin-body">
       <div id="section-add">
         <div class="add-form-section">
-          <div class="add-form-title">✨ Nouvel article</div>
+          <div class="add-form-title" data-i18n="admin.newItem">✨ Nouvel article</div>
           <div class="add-form-grid w3">
-            <div class="form-field"><label>Catégorie *</label>
+            <div class="form-field"><label data-i18n="admin.category">Catégorie *</label>
               <select id="f-cat"><option value="">— Choisir —</option></select></div>
-            <div class="form-field"><label>Nouvelle catégorie</label>
-              <input type="text" id="f-newcat" placeholder="Créer…"></div>
-            <div class="form-field"><label>Commandé par</label>
+            <div class="form-field"><label data-i18n="admin.newCat">Nouvelle catégorie</label>
+              <input type="text" id="f-newcat" data-i18n-ph="admin.createCat" placeholder="Créer…"></div>
+            <div class="form-field"><label data-i18n="admin.orderedBy">Commandé par</label>
               <input type="text" id="f-orderby" placeholder="Store Fixture"></div>
           </div>
           <div class="add-form-grid">
-            <div class="form-field"><label>Description *</label>
-              <input type="text" id="f-desc" placeholder="Nom de l'article"></div>
-            <div class="form-field"><label>Réf. Store Fixture</label>
+            <div class="form-field"><label data-i18n="admin.desc">Description *</label>
+              <input type="text" id="f-desc" data-i18n-ph="admin.descPh" placeholder="Nom de l'article"></div>
+            <div class="form-field"><label data-i18n="admin.sfRef">Réf. Store Fixture</label>
               <input type="text" id="f-item" placeholder="10046751"></div>
           </div>
           <div class="add-form-grid w3">
-            <div class="form-field"><label>Fournisseur</label>
+            <div class="form-field"><label data-i18n="admin.supplier">Fournisseur</label>
               <input type="text" id="f-sup" list="sup-list" placeholder="Wanzl Nordic">
               <datalist id="sup-list"></datalist></div>
-            <div class="form-field"><label>Réf. Fournisseur</label>
+            <div class="form-field"><label data-i18n="admin.supRef">Réf. Fournisseur</label>
               <input type="text" id="f-supitem" placeholder="NORM131"></div>
-            <div class="form-field"><label>Photo</label>
+            <div class="form-field"><label data-i18n="admin.photo">Photo</label>
               <div class="img-upload-area" id="uploadArea" onclick="document.getElementById('f-img').click()">
                 <img id="imgPreview" class="img-preview" src="" alt="" style="display:none">
                 <div class="img-upload-label" id="uploadLabel">
                   <div style="font-size:20px;margin-bottom:3px">📷</div>
-                  <div>Cliquer pour <span>choisir</span></div>
+                  <div><span data-i18n="admin.clickTo">Cliquer pour</span> <span data-i18n="admin.clickChoose">choisir</span></div>
                 </div>
               </div>
               <input type="file" id="f-img" accept="image/*" style="display:none" onchange="handleImgUpload(this)"></div>
           </div>
           <div class="add-form-actions">
-            <button class="btn-reset" onclick="resetAddForm()">Réinitialiser</button>
-            <button class="btn-add-item" onclick="addItem()">✅ Ajouter</button>
+            <button class="btn-reset" onclick="resetAddForm()" data-i18n="admin.reset">Réinitialiser</button>
+            <button class="btn-add-item" onclick="addItem()" data-i18n="admin.add">✅ Ajouter</button>
           </div>
         </div>
       </div>
       <div id="section-manage" style="display:none;flex:1;flex-direction:column;overflow:hidden">
         <div class="db-toolbar">
-          <input class="db-search" type="text" id="dbSearch" placeholder="Rechercher…" oninput="renderDbTable()">
+          <input class="db-search" type="text" id="dbSearch" data-i18n-ph="admin.searchPh" placeholder="Rechercher…" oninput="renderDbTable()">
           <select class="db-cat-filter" id="dbCatFilter" onchange="renderDbTable()"><option value="">Toutes</option></select>
         </div>
         <div class="db-stats" id="dbStats"></div>
         <div class="db-table-wrap">
           <table class="db-table">
             <thead><tr>
-              <th>Photo</th><th>Description</th><th>Réf.</th><th>Catégorie</th><th>Fournisseur</th><th>Stock min</th><th></th>
+              <th data-i18n="col.photo">Photo</th><th data-i18n="admin.colDesc">Description</th><th data-i18n="admin.colRef">Réf.</th><th data-i18n="admin.colCat">Catégorie</th><th data-i18n="admin.colSup">Fournisseur</th><th data-i18n="admin.colStock">Stock min</th><th></th>
             </tr></thead>
             <tbody id="dbTableBody"></tbody>
           </table>
@@ -541,11 +550,11 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
 <div class="confirm-del" id="confirmDel">
   <div class="confirm-box">
     <div class="confirm-icon">🗑️</div>
-    <div class="confirm-title">Supprimer cet article ?</div>
+    <div class="confirm-title" data-i18n="del.title">Supprimer cet article ?</div>
     <div class="confirm-desc" id="confirmDesc"></div>
     <div class="confirm-actions">
-      <button class="btn-confirm-cancel" onclick="closeConfirmDel()">Annuler</button>
-      <button class="btn-confirm-del" onclick="executeDelete()">Supprimer</button>
+      <button class="btn-confirm-cancel" onclick="closeConfirmDel()" data-i18n="del.cancel">Annuler</button>
+      <button class="btn-confirm-del" onclick="executeDelete()" data-i18n="del.confirm">Supprimer</button>
     </div>
   </div>
 </div>
@@ -554,26 +563,26 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
 <div class="overlay" id="cartOverlay">
   <div class="cart-panel">
     <div class="cart-hdr">
-      <div class="cart-title">📋 Bon de commande</div>
+      <div class="cart-title" data-i18n="cart.title">📋 Bon de commande</div>
       <button class="close-btn" onclick="toggleCart()">✕</button>
     </div>
     <div class="cart-meta">
-      <div class="meta-field"><label>Magasin</label><input type="text" id="storeName" placeholder="NORMAL Paris…"></div>
-      <div class="meta-field"><label>Date commande</label><input type="date" id="orderDate"></div>
-      <div class="meta-field"><label>Commandé par</label><input type="text" id="orderedBy" placeholder="Nom"></div>
-      <div class="meta-field"><label>N° commande</label><input type="text" id="orderNum" placeholder="Auto"></div>
-      <div class="meta-field full"><label>🚚 Livraison souhaitée</label><input type="date" id="deliveryDate"></div>
-      <div class="meta-field full"><label>Commentaire</label><input type="text" id="orderComment" placeholder="Notes…"></div>
+      <div class="meta-field"><label data-i18n="cart.store">Magasin</label><input type="text" id="storeName" data-i18n-ph="cart.storePh" placeholder="NORMAL Paris…"></div>
+      <div class="meta-field"><label data-i18n="cart.date">Date commande</label><input type="date" id="orderDate"></div>
+      <div class="meta-field"><label data-i18n="cart.orderedBy">Commandé par</label><input type="text" id="orderedBy" data-i18n-ph="cart.namePh" placeholder="Nom"></div>
+      <div class="meta-field"><label data-i18n="cart.num">N° commande</label><input type="text" id="orderNum" data-i18n-ph="cart.numPh" placeholder="Auto"></div>
+      <div class="meta-field full"><label data-i18n="cart.delivery">🚚 Livraison souhaitée</label><input type="date" id="deliveryDate"></div>
+      <div class="meta-field full"><label data-i18n="cart.comment">Commentaire</label><input type="text" id="orderComment" data-i18n-ph="cart.notesPh" placeholder="Notes…"></div>
     </div>
-    <div class="cart-items" id="cartItems"><div class="cart-empty">Panier vide — ajoutez des articles.</div></div>
+    <div class="cart-items" id="cartItems"><div class="cart-empty" data-i18n="cart.empty">Panier vide — ajoutez des articles.</div></div>
     <div class="cart-footer">
       <div class="order-summary">
-        <span class="sum-label">Total — <span id="totalLines">0</span> ligne(s)</span>
-        <span class="sum-value"><span id="totalQty">0</span> unités</span>
+        <span class="sum-label"><span data-i18n="cart.total">Total</span> — <span id="totalLines">0</span> <span data-i18n="cart.lines">ligne(s)</span></span>
+        <span class="sum-value"><span id="totalQty">0</span> <span data-i18n="cart.units">unités</span></span>
       </div>
       <div class="footer-btns">
-        <button class="btn-print" id="btnPrint" onclick="doPrint()" disabled>🖨 Imprimer</button>
-        <button class="btn-email" id="btnEmail" onclick="openEmailModal()" disabled>✉️ Mail</button>
+        <button class="btn-print" id="btnPrint" onclick="doPrint()" disabled>🖨 <span data-i18n="cart.print">Imprimer</span></button>
+        <button class="btn-email" id="btnEmail" onclick="openEmailModal()" disabled>✉️ <span data-i18n="cart.email">Mail</span></button>
       </div>
     </div>
   </div>
@@ -582,22 +591,22 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
 <!-- EMAIL MODAL -->
 <div class="email-overlay" id="emailOverlay">
   <div class="email-box">
-    <h3>✉️ Envoyer par mail</h3>
-    <div class="email-field"><label>Destinataire *</label>
+    <h3 data-i18n="email.title">✉️ Envoyer par mail</h3>
+    <div class="email-field"><label data-i18n="email.to">Destinataire *</label>
       <input type="email" id="emailTo" placeholder="commandes@centrale-achat.com"></div>
-    <div class="email-field"><label>Copie (CC)</label>
+    <div class="email-field"><label data-i18n="email.cc">Copie (CC)</label>
       <input type="email" id="emailCc" placeholder="responsable@magasin.com"></div>
-    <div class="email-field"><label>Message</label>
-      <textarea id="emailMsg" placeholder="Livraison avant le…"></textarea></div>
-    <div class="info-box">📎 Le PDF sera téléchargé automatiquement. Votre client mail s'ouvrira avec le récapitulatif pré-rempli.</div>
+    <div class="email-field"><label data-i18n="email.msg">Message</label>
+      <textarea id="emailMsg" data-i18n-ph="email.msgPh" placeholder="Livraison avant le…"></textarea></div>
+    <div class="info-box" data-i18n="email.info">📎 Le PDF sera téléchargé automatiquement. Votre client mail s'ouvrira avec le récapitulatif pré-rempli.</div>
     <div class="progress-wrap" id="progressWrap">
       <div class="progress-label" id="progressLabel">Initialisation…</div>
       <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     </div>
     <div class="email-actions">
-      <button class="btn-cancel-email" id="btnCancelEmail" onclick="closeEmailModal()">Annuler</button>
+      <button class="btn-cancel-email" id="btnCancelEmail" onclick="closeEmailModal()" data-i18n="email.cancel">Annuler</button>
       <button class="btn-send-email" id="btnSendEmail" onclick="sendEmail()">
-        <span class="btn-txt">Générer PDF et envoyer</span>
+        <span class="btn-txt" data-i18n="email.send">Générer PDF et envoyer</span>
         <div class="spinner"></div>
       </button>
     </div>
@@ -676,7 +685,7 @@ function updateCatAllBtn(){
 
 function rebuildSupFilter(){
   const sel=document.getElementById('supFilter'),cur=sel.value;
-  sel.innerHTML='<option value="">Tous fournisseurs</option>';
+  sel.innerHTML=`<option value="">${t('main.allSuppliers')}</option>`;
   getSups().forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
   if(cur)sel.value=cur;
 }
@@ -694,7 +703,7 @@ function applyFilters(){
     d.supplier.toLowerCase().includes(q)||
     d.supplier_item.toLowerCase().includes(q));
   // Update result info
-  document.getElementById('resultInfo').textContent=`${items.length} article${items.length!==1?'s':''}`;
+  document.getElementById('resultInfo').textContent=t('res.items',items.length);
   // Active filter chips
   const af=document.getElementById('activeFilters');af.innerHTML='';
   selectedCats.forEach(cat=>{
@@ -733,9 +742,9 @@ function renderTable(items){
       <td><span class="cat-tag" style="background:${color}18;color:${color};border:1px solid ${color}40">${item.category}</span></td>
       <td>
         <div class="stock-min-cell">
-          <input class="stock-input" type="number" min="0" value="${stockMin}" title="Stock minimum"
+          <input class="stock-input" type="number" min="0" value="${stockMin}" title="${t('stock.title')}"
             id="smin-${i}" onchange="setStockMin(${i},this.value)">
-          <span class="stock-badge${isAlert?' show':''}" title="Stock minimum défini">⚠️</span>
+          <span class="stock-badge${isAlert?' show':''}" title="${t('stock.defined')}">⚠️</span>
         </div>
       </td>
       <td><div class="qty-control">
@@ -743,7 +752,7 @@ function renderTable(items){
         <input class="qty-input" type="number" min="1" value="${qtys[i]||1}" id="qty-${i}" onchange="setQty(${i},this.value)">
         <button class="qty-btn" onclick="adjQty(${i},1)">+</button>
       </div></td>
-      <td><button class="add-btn${inCart?' added':''}" id="addbtn-${i}" onclick="addToCart(${i})">${inCart?'✓ Ajouté':'+ Ajouter'}</button></td>`;
+      <td><button class="add-btn${inCart?' added':''}" id="addbtn-${i}" onclick="addToCart(${i})">${inCart?t('btn.added'):t('btn.add')}</button></td>`;
     tbody.appendChild(tr);
   });
 }
@@ -761,7 +770,7 @@ function renderCards(items){
     const div=document.createElement('div');
     div.className='item-card'+(stockMin>0?' stock-alert':'');
     div.innerHTML=`${imgHtml}<div class="card-body">
-      <div class="card-desc">${item.description}${stockMin>0?' <span title="Stock minimum défini">⚠️</span>':''}</div>
+      <div class="card-desc">${item.description}${stockMin>0?` <span title="${t('stock.defined')}">⚠️</span>`:''}</div>
       ${item.item_number?`<div class="card-meta">SF: ${item.item_number}</div>`:''}
       ${item.supplier?`<div class="card-meta blue">${item.supplier}${item.supplier_item?' · '+item.supplier_item:''}</div>`:''}
       <div class="card-tags">
@@ -773,7 +782,7 @@ function renderCards(items){
           <input class="qty-input" type="number" min="1" value="${qtys[i]||1}" id="cqty-${i}" onchange="setQty(${i},this.value)" style="width:36px">
           <button class="qty-btn" onclick="adjQty(${i},1)">+</button>
         </div>
-        <button class="card-add-btn${inCart?' added':''}" id="caddbtn-${i}" onclick="addToCart(${i})">${inCart?'✓ Ajouté':'+ Ajouter'}</button>
+        <button class="card-add-btn${inCart?' added':''}" id="caddbtn-${i}" onclick="addToCart(${i})">${inCart?t('btn.added'):t('btn.add')}</button>
       </div></div>`;
     list.appendChild(div);
   });
@@ -800,14 +809,14 @@ function setQty(i,v){
 }
 function addToCart(i){
   const item=DB[i],ex=cart.find(c=>c.idx===i);
-  if(ex){ex.qty=qtys[i];toast('Quantité mise à jour !');}
-  else{cart.push({idx:i,qty:qtys[i],...item});toast('Article ajouté !');}
+  if(ex){ex.qty=qtys[i];toast(t('cart.qtyUpdated'));}
+  else{cart.push({idx:i,qty:qtys[i],...item});toast(t('cart.added'));}
   updateCount();renderCart();
-  ['addbtn-','caddbtn-'].forEach(p=>{const b=document.getElementById(p+i);if(b){b.textContent='✓ Ajouté';b.classList.add('added');}});
+  ['addbtn-','caddbtn-'].forEach(p=>{const b=document.getElementById(p+i);if(b){b.textContent=t('btn.added');b.classList.add('added');}});
 }
 function removeFromCart(i){
   cart=cart.filter(c=>c.idx!==i);updateCount();renderCart();
-  ['addbtn-','caddbtn-'].forEach(p=>{const b=document.getElementById(p+i);if(b){b.textContent='+ Ajouter';b.classList.remove('added');}});
+  ['addbtn-','caddbtn-'].forEach(p=>{const b=document.getElementById(p+i);if(b){b.textContent=t('btn.add');b.classList.remove('added');}});
 }
 function updateCartQty(i,d){const ci=cart.find(c=>c.idx===i);if(!ci)return;ci.qty=Math.max(1,ci.qty+d);qtys[i]=ci.qty;renderCart();}
 function updateCount(){
@@ -818,7 +827,7 @@ function updateCount(){
 }
 function renderCart(){
   const el=document.getElementById('cartItems');
-  if(!cart.length){el.innerHTML='<div class="cart-empty">Panier vide — ajoutez des articles.</div>';document.getElementById('totalLines').textContent=0;document.getElementById('totalQty').textContent=0;return;}
+  if(!cart.length){el.innerHTML=`<div class="cart-empty">${t('cart.empty')}</div>`;document.getElementById('totalLines').textContent=0;document.getElementById('totalQty').textContent=0;return;}
   let html='',totalQty=0;
   cart.forEach(item=>{
     totalQty+=item.qty;
@@ -868,14 +877,14 @@ function renderHistory(){
   const footer=document.getElementById('historyFooterInfo');
   if(!orderHistory.length){
     body.innerHTML=`<div class="history-empty"><div class="history-empty-icon">📭</div>
-      <div>Aucune commande dans l'historique.</div>
-      <div style="margin-top:6px;font-size:11px;color:#9ca3af">Les bons envoyés ou imprimés apparaîtront ici.</div></div>`;
+      <div>${t('hist.empty')}</div>
+      <div style="margin-top:6px;font-size:11px;color:#9ca3af">${t('hist.emptyHint')}</div></div>`;
     footer.textContent='';return;
   }
-  footer.textContent=`${orderHistory.length} commande${orderHistory.length>1?'s':''}`;
+  footer.textContent=t('hist.orders',orderHistory.length);
   body.innerHTML='';
   orderHistory.forEach((entry,hi)=>{
-    const savedDate=new Date(entry.savedAt).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const savedDate=new Date(entry.savedAt).toLocaleString(LANG==='fr'?'fr-FR':'en-GB',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
     const showCount=3;
     const itemsHtml=entry.items.slice(0,showCount).map(item=>{
       const imgHtml=item.image?`<img class="hc-item-img" src="${item.image}" alt="">`:`<div class="hc-item-img-ph">📦</div>`;
@@ -885,7 +894,7 @@ function renderHistory(){
       </div>`;
     }).join('');
     const extraCount=entry.items.length-showCount;
-    const extraHtml=extraCount>0?`<div class="hc-toggle" onclick="toggleHistCollapse(${hi})">▾ +${extraCount} article${extraCount>1?'s':''}…</div>
+    const extraHtml=extraCount>0?`<div class="hc-toggle" onclick="toggleHistCollapse(${hi})">${t('hist.more',extraCount)}</div>
       <div class="hc-collapsed" id="hc-extra-${hi}">${entry.items.slice(showCount).map(item=>{
         const imgHtml=item.image?`<img class="hc-item-img" src="${item.image}" alt="">`:`<div class="hc-item-img-ph">📦</div>`;
         return`<div class="hc-item-row">${imgHtml}<span class="hc-item-desc">${item.description}</span><span class="hc-item-qty">×${item.qty}</span></div>`;
@@ -897,14 +906,14 @@ function renderHistory(){
         <div class="hc-info">
           <div class="hc-num">${entry.num}</div>
           <div class="hc-store">${entry.store}</div>
-          <div class="hc-date">Commandé le ${savedDate} par ${entry.by}${deliveryInfo}</div>
+          <div class="hc-date">${t('hist.orderedOn')} ${savedDate} ${t('hist.by')} ${entry.by}${deliveryInfo}</div>
         </div>
-        <div class="hc-badge">${entry.lines} art. · ${entry.totalQty} u.</div>
+        <div class="hc-badge">${entry.lines} · ${entry.totalQty}</div>
       </div>
       <div class="history-card-actions">
-        <button class="btn-hist-reprint" onclick="reprintHistory(${hi})">🖨 Réimprimer</button>
-        <button class="btn-hist-reload" onclick="reloadHistCart(${hi})">↺ Recharger panier</button>
-        <button class="btn-hist-del" onclick="deleteHistEntry(${hi})">🗑 Supprimer</button>
+        <button class="btn-hist-reprint" onclick="reprintHistory(${hi})">${t('hist.reprint')}</button>
+        <button class="btn-hist-reload" onclick="reloadHistCart(${hi})">${t('hist.reload')}</button>
+        <button class="btn-hist-del" onclick="deleteHistEntry(${hi})">${t('hist.delete')}</button>
       </div>
       <div class="history-card-items">${itemsHtml}${extraHtml}</div>`;
     body.appendChild(card);
@@ -931,34 +940,35 @@ function reprintHistory(hi){
     </tr>`;
   }).join('');
   const win=window.open('','_blank');
-  const delivLine=entry.delivery?`<tr><td style="padding:2px 8px;color:#666">🚚 Livraison</td><td style="padding:2px 8px;font-weight:bold;color:#16a34a">${entry.delivery}</td></tr>`:'';
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BC ${entry.num}</title>
+  const locale=LANG==='fr'?'fr-FR':'en-GB';
+  const delivLine=entry.delivery?`<tr><td style="padding:2px 8px;color:#666">${t('pdf.deliveryShort')}</td><td style="padding:2px 8px;font-weight:bold;color:#16a34a">${entry.delivery}</td></tr>`:'';
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${t('pdf.no')} ${entry.num}</title>
     <style>body{font-family:Arial,sans-serif;color:#1a1a2e;margin:0;padding:20px}@media print{@page{margin:12mm 18mm}}</style></head>
     <body>
     <div style="border-bottom:3px solid #1a1a2e;padding-bottom:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
-      <div><div style="font-size:26px;font-weight:900">BON DE COMMANDE</div><div style="font-size:12px;color:#666;margin-top:3px">Store Fixtures — Centrale d'Achat</div></div>
+      <div><div style="font-size:26px;font-weight:900">${t('pdf.title')}</div><div style="font-size:12px;color:#666;margin-top:3px">${t('pdf.subtitle')}</div></div>
       <table style="font-size:11px;border-collapse:collapse">
-        <tr><td style="padding:2px 8px;color:#666">N°</td><td style="padding:2px 8px;font-weight:bold">${entry.num}</td></tr>
-        <tr><td style="padding:2px 8px;color:#666">Magasin</td><td style="padding:2px 8px;font-weight:bold">${entry.store}</td></tr>
-        <tr><td style="padding:2px 8px;color:#666">Date</td><td style="padding:2px 8px">${entry.date}</td></tr>
-        <tr><td style="padding:2px 8px;color:#666">Par</td><td style="padding:2px 8px">${entry.by}</td></tr>
+        <tr><td style="padding:2px 8px;color:#666">${t('pdf.no')}</td><td style="padding:2px 8px;font-weight:bold">${entry.num}</td></tr>
+        <tr><td style="padding:2px 8px;color:#666">${t('pdf.store')}</td><td style="padding:2px 8px;font-weight:bold">${entry.store}</td></tr>
+        <tr><td style="padding:2px 8px;color:#666">${t('pdf.date')}</td><td style="padding:2px 8px">${entry.date}</td></tr>
+        <tr><td style="padding:2px 8px;color:#666">${t('pdf.by')}</td><td style="padding:2px 8px">${entry.by}</td></tr>
         ${delivLine}
-        ${entry.comment?`<tr><td style="padding:2px 8px;color:#666">Note</td><td style="padding:2px 8px">${entry.comment}</td></tr>`:''}
+        ${entry.comment?`<tr><td style="padding:2px 8px;color:#666">${t('pdf.note')}</td><td style="padding:2px 8px">${entry.comment}</td></tr>`:''}
       </table>
     </div>
     <table style="width:100%;border-collapse:collapse;font-size:11px">
       <thead><tr style="background:#1a1a2e;color:#fff">
-        <th style="padding:8px;text-align:center">#</th><th style="padding:8px;text-align:center">Photo</th>
-        <th style="padding:8px">Réf. SF</th><th style="padding:8px">Description</th>
-        <th style="padding:8px">Fournisseur</th><th style="padding:8px;text-align:center">Qté</th>
+        <th style="padding:8px;text-align:center">#</th><th style="padding:8px;text-align:center">${t('pdf.colPhoto')}</th>
+        <th style="padding:8px">${t('pdf.colSf')}</th><th style="padding:8px">${t('pdf.colDesc')}</th>
+        <th style="padding:8px">${t('pdf.colSup')}</th><th style="padding:8px;text-align:center">${t('pdf.colQty')}</th>
       </tr></thead><tbody>${rows}</tbody>
       <tfoot><tr style="background:#1a1a2e;color:#fff">
-        <td colspan="5" style="padding:8px;text-align:right;font-weight:bold">Total — ${entry.lines} ligne(s)</td>
+        <td colspan="5" style="padding:8px;text-align:right;font-weight:bold">${t('pdf.totalRow',entry.lines)}</td>
         <td style="padding:8px;text-align:center;font-weight:900;font-size:15px">${entry.totalQty}</td>
       </tr></tfoot>
     </table>
     <div style="margin-top:18px;font-size:10px;color:#999;border-top:1px solid #e2e4ec;padding-top:8px">
-      Réimprimé le ${new Date().toLocaleString('fr-FR')}</div>
+      ${t('pdf.reprinted',new Date().toLocaleString(locale))}</div>
     </body></html>`);
   win.document.close();setTimeout(()=>{win.focus();win.print();},300);
 }
@@ -966,7 +976,7 @@ function reprintHistory(hi){
 function reloadHistCart(hi){
   const entry=orderHistory[hi];
   // Vider le panier actuel
-  cart.forEach(c=>{['addbtn-','caddbtn-'].forEach(p=>{const b=document.getElementById(p+c.idx);if(b){b.textContent='+ Ajouter';b.classList.remove('added');}});});
+  cart.forEach(c=>{['addbtn-','caddbtn-'].forEach(p=>{const b=document.getElementById(p+c.idx);if(b){b.textContent=t('btn.add');b.classList.remove('added');}});});
   cart=[];
   // Recharger les articles depuis l'historique
   entry.items.forEach(hItem=>{
@@ -983,7 +993,7 @@ function reloadHistCart(hi){
   document.getElementById('orderComment').value=entry.comment||'';
   updateCount();renderCart();applyFilters();
   closeHistory();toggleCart();
-  toast(`↺ Commande ${entry.num} rechargée dans le panier !`);
+  toast(t('hist.reloaded',entry.num));
 }
 
 function deleteHistEntry(hi){
@@ -992,7 +1002,7 @@ function deleteHistEntry(hi){
   renderHistory();
 }
 function clearHistory(){
-  if(!confirm('Effacer tout l\'historique ?')) return;
+  if(!confirm(t('hist.confirmClear'))) return;
   orderHistory=[];
   localStorage.setItem('sf_history','[]');
   renderHistory();
@@ -1012,7 +1022,7 @@ function switchAdminTab(tab){
 function populateAdminCats(){
   ['f-cat','dbCatFilter'].forEach(id=>{
     const sel=document.getElementById(id),cur=sel.value;
-    sel.innerHTML=id==='f-cat'?'<option value="">— Choisir —</option>':'<option value="">Toutes</option>';
+    sel.innerHTML=id==='f-cat'?`<option value="">${t('admin.choose')}</option>`:`<option value="">${t('admin.all')}</option>`;
     getCats().forEach(c=>{sel.innerHTML+=`<option value="${c}">${c}</option>`;});
     if(cur)sel.value=cur;
   });
@@ -1031,15 +1041,15 @@ function handleImgUpload(input){
 }
 function addItem(){
   const desc=document.getElementById('f-desc').value.trim();
-  if(!desc){toast('⚠️ Description obligatoire','#ea580c');return;}
+  if(!desc){toast(t('admin.descRequired'),'#ea580c');return;}
   const cat=document.getElementById('f-newcat').value.trim()||document.getElementById('f-cat').value;
-  if(!cat){toast('⚠️ Catégorie obligatoire','#ea580c');return;}
+  if(!cat){toast(t('admin.catRequired'),'#ea580c');return;}
   DB.push({category:cat,item_number:document.getElementById('f-item').value.trim(),description:desc,
     supplier:document.getElementById('f-sup').value.trim(),supplier_item:document.getElementById('f-supitem').value.trim(),
     order_by:document.getElementById('f-orderby').value.trim(),image:uploadedImg||'',stock_min:0});
   qtys[DB.length-1]=1;
   rebuildSidebar();rebuildSupFilter();populateAdminCats();populateSupDatalist();applyFilters();renderDbTable();resetAddForm();
-  toast(`✅ "${desc}" ajouté !`);
+  toast(t('admin.added',desc));
 }
 function resetAddForm(){
   ['f-desc','f-item','f-sup','f-supitem','f-orderby','f-newcat'].forEach(id=>document.getElementById(id).value='');
@@ -1054,7 +1064,7 @@ function renderDbTable(){
   let items=DB.map((d,i)=>({...d,idx:i}));
   if(catF)items=items.filter(d=>d.category===catF);
   if(q)items=items.filter(d=>d.description.toLowerCase().includes(q)||d.item_number.toLowerCase().includes(q)||d.supplier.toLowerCase().includes(q));
-  document.getElementById('dbStats').textContent=`${items.length} article${items.length!==1?'s':''} / ${DB.length} total`;
+  document.getElementById('dbStats').textContent=t('admin.statItems',items.length,DB.length);
   const tbody=document.getElementById('dbTableBody');tbody.innerHTML='';
   items.forEach(item=>{
     const i=item.idx,color=catColor(item.category);
@@ -1065,7 +1075,7 @@ function renderDbTable(){
       <td class="db-td-mono">${item.item_number||'—'}</td>
       <td><span class="cat-tag" style="background:${color}18;color:${color};border:1px solid ${color}40;font-size:9px">${item.category}</span></td>
       <td class="db-td-sup">${item.supplier||'—'}</td>
-      <td class="db-td-mono">${item.stock_min||0} u. ${item.stock_min>0?'⚠️':''}</td>
+      <td class="db-td-mono">${item.stock_min||0} ${item.stock_min>0?'⚠️':''}</td>
       <td><div class="row-actions">
         <button class="btn-edit" onclick="startEdit(${i})">✏️</button>
         <button class="btn-delete" onclick="confirmDelete(${i})">🗑️</button>
@@ -1094,11 +1104,11 @@ function saveEdit(i){
   DB[i].category=document.getElementById(`ei-cat-${i}`).value;
   DB[i].supplier=document.getElementById(`ei-sup-${i}`).value.trim();
   DB[i].stock_min=Math.max(0,parseInt(document.getElementById(`ei-smin-${i}`).value)||0);
-  rebuildSidebar();rebuildSupFilter();populateAdminCats();applyFilters();renderDbTable();toast('✅ Article modifié !');
+  rebuildSidebar();rebuildSupFilter();populateAdminCats();applyFilters();renderDbTable();toast(t('admin.modified'));
 }
 function confirmDelete(i){
   deleteTarget=i;
-  document.getElementById('confirmDesc').textContent=`"${DB[i].description}" sera supprimé définitivement.`;
+  document.getElementById('confirmDesc').textContent=t('del.desc',DB[i].description);
   document.getElementById('confirmDel').classList.add('open');
 }
 function closeConfirmDel(){document.getElementById('confirmDel').classList.remove('open');deleteTarget=null;}
@@ -1110,7 +1120,7 @@ function executeDelete(){
   const nq={};DB.forEach((_,i)=>{nq[i]=qtys[i]||1;});Object.assign(qtys,nq);
   cart=cart.map(c=>({...c,idx:DB.findIndex(d=>d.description===c.description&&d.category===c.category)})).filter(c=>c.idx>=0);
   rebuildSidebar();rebuildSupFilter();populateAdminCats();applyFilters();renderDbTable();updateCount();
-  closeConfirmDel();toast(`🗑️ "${desc}" supprimé.`,'#ea580c');
+  closeConfirmDel();toast(t('del.done',desc),'#ea580c');
 }
 
 /* ── PDF ── */
@@ -1140,9 +1150,9 @@ async function generatePDF(meta){
   const titleH=12;
   doc.setFillColor(26,26,46);doc.rect(margin,y,contentW,titleH,'F');
   doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(14);
-  doc.text('BON DE COMMANDE',margin+5,y+8.5);
+  doc.text(t('pdf.title'),margin+5,y+8.5);
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(200,200,220);
-  doc.text('Store Fixtures — Centrale d\'Achat',pW-margin-5,y+8.5,{align:'right'});
+  doc.text(t('pdf.subtitle'),pW-margin-5,y+8.5,{align:'right'});
   y+=titleH+3;
 
   // Bloc info
@@ -1158,18 +1168,18 @@ async function generatePDF(meta){
     doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(26,26,46);
     doc.text(val||'—',cx,iy+lineH-1);
   };
-  field('N° de commande',num,col1x);field('Magasin',store,col2x);iy+=lineH*2-1;
-  field('Date commande',date,col1x);field('Commandé par',by,col2x);iy+=lineH*2-1;
+  field(t('pdf.orderNo'),num,col1x);field(t('pdf.store'),store,col2x);iy+=lineH*2-1;
+  field(t('pdf.orderDate'),date,col1x);field(t('pdf.orderedBy'),by,col2x);iy+=lineH*2-1;
   if(delivery){
     doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(120,120,140);
-    doc.text('Livraison souhaitée',col1x,iy);
+    doc.text(t('pdf.delivery'),col1x,iy);
     doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(22,163,74);
     doc.text('🚚 '+delivery,col1x,iy+lineH-1);
     iy+=lineH*2-1;
   }
   if(comment){
     doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(120,120,140);
-    doc.text('Commentaire',col1x,iy);
+    doc.text(t('pdf.comment'),col1x,iy);
     doc.setFontSize(8.5);doc.setFont('helvetica','normal');doc.setTextColor(26,26,46);
     doc.text(comment,col1x,iy+lineH-1,{maxWidth:contentW-8});
   }
@@ -1191,9 +1201,9 @@ async function generatePDF(meta){
     startY:y,margin:{left:margin,right:margin},
     head:[[
       {content:'#',styles:{halign:'center'}},
-      {content:'Photo',styles:{halign:'center'}},
-      'Réf. SF','Description','Fournisseur','Réf. Fourn.','Cmd par',
-      {content:'Qté',styles:{halign:'center'}}
+      {content:t('pdf.colPhoto'),styles:{halign:'center'}},
+      t('pdf.colSf'),t('pdf.colDesc'),t('pdf.colSup'),t('pdf.colSupRef'),t('pdf.colOrd'),
+      {content:t('pdf.colQty'),styles:{halign:'center'}}
     ]],
     body:tableRows,
     columnStyles:{0:{cellWidth:8},1:{cellWidth:18},2:{cellWidth:22},3:{cellWidth:52},4:{cellWidth:28},5:{cellWidth:22},6:{cellWidth:22},7:{cellWidth:12}},
@@ -1211,18 +1221,19 @@ async function generatePDF(meta){
 
   const finalY=doc.lastAutoTable.finalY+5;
   // Pied
+  const locale=LANG==='fr'?'fr-FR':'en-GB';
   doc.setFillColor(26,26,46);doc.rect(margin,finalY,contentW,9,'F');
   doc.setTextColor(255,255,255);doc.setFontSize(8);doc.setFont('helvetica','bold');
-  doc.text(`TOTAL : ${cart.length} ligne(s)  —  ${totalQty} unités`,margin+4,finalY+6);
+  doc.text(t('pdf.total',cart.length,totalQty),margin+4,finalY+6);
   doc.setFont('helvetica','normal');
-  doc.text(`Réf. ${num}`,margin+contentW-4,finalY+6,{align:'right'});
+  doc.text(t('pdf.ref',num),margin+contentW-4,finalY+6,{align:'right'});
   if(delivery){
     doc.setFillColor(22,163,74);doc.rect(margin,finalY+9,contentW,7,'F');
     doc.setTextColor(255,255,255);doc.setFontSize(8);
-    doc.text(`🚚 Livraison souhaitée : ${delivery}`,margin+4,finalY+14);
+    doc.text(t('pdf.deliveryFoot',delivery),margin+4,finalY+14);
   }
   doc.setTextColor(150,150,150);doc.setFontSize(7);doc.setFont('helvetica','normal');
-  doc.text(`Généré le ${new Date().toLocaleString('fr-FR')} — Store Fixtures Order Management System`,margin,finalY+(delivery?20:14));
+  doc.text(t('pdf.gen',new Date().toLocaleString(locale)),margin,finalY+(delivery?20:14));
 
   return doc;
 }
@@ -1240,35 +1251,36 @@ function doPrint(){
       <td style="padding:6px 8px;border-bottom:1px solid #e2e4ec;text-align:center;font-weight:900;font-size:14px">${item.qty}</td>
     </tr>`;
   }).join('');
-  const delivLine=meta.delivery?`<tr><td style="padding:2px 8px;color:#666">🚚 Livraison</td><td style="padding:2px 8px;font-weight:bold;color:#16a34a">${meta.delivery}</td></tr>`:'';
+  const delivLine=meta.delivery?`<tr><td style="padding:2px 8px;color:#666">${t('pdf.deliveryShort')}</td><td style="padding:2px 8px;font-weight:bold;color:#16a34a">${meta.delivery}</td></tr>`:'';
+  const locale=LANG==='fr'?'fr-FR':'en-GB';
   const win=window.open('','_blank');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>BC ${meta.num}</title>
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${t('pdf.no')} ${meta.num}</title>
     <style>body{font-family:Arial,sans-serif;color:#1a1a2e;margin:0;padding:20px}@media print{@page{margin:12mm 18mm}}</style></head>
     <body>
     <div style="border-bottom:3px solid #1a1a2e;padding-bottom:14px;margin-bottom:16px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px">
-      <div><div style="font-size:26px;font-weight:900">BON DE COMMANDE</div><div style="font-size:12px;color:#666;margin-top:3px">Store Fixtures — Centrale d'Achat</div></div>
+      <div><div style="font-size:26px;font-weight:900">${t('pdf.title')}</div><div style="font-size:12px;color:#666;margin-top:3px">${t('pdf.subtitle')}</div></div>
       <table style="font-size:11px;border-collapse:collapse">
-        <tr><td style="padding:2px 8px;color:#666">N°</td><td style="padding:2px 8px;font-weight:bold">${meta.num}</td></tr>
-        <tr><td style="padding:2px 8px;color:#666">Magasin</td><td style="padding:2px 8px;font-weight:bold">${meta.store}</td></tr>
-        <tr><td style="padding:2px 8px;color:#666">Date</td><td style="padding:2px 8px">${meta.date}</td></tr>
-        <tr><td style="padding:2px 8px;color:#666">Par</td><td style="padding:2px 8px">${meta.by}</td></tr>
+        <tr><td style="padding:2px 8px;color:#666">${t('pdf.no')}</td><td style="padding:2px 8px;font-weight:bold">${meta.num}</td></tr>
+        <tr><td style="padding:2px 8px;color:#666">${t('pdf.store')}</td><td style="padding:2px 8px;font-weight:bold">${meta.store}</td></tr>
+        <tr><td style="padding:2px 8px;color:#666">${t('pdf.date')}</td><td style="padding:2px 8px">${meta.date}</td></tr>
+        <tr><td style="padding:2px 8px;color:#666">${t('pdf.by')}</td><td style="padding:2px 8px">${meta.by}</td></tr>
         ${delivLine}
-        ${meta.comment?`<tr><td style="padding:2px 8px;color:#666">Note</td><td style="padding:2px 8px">${meta.comment}</td></tr>`:''}
+        ${meta.comment?`<tr><td style="padding:2px 8px;color:#666">${t('pdf.note')}</td><td style="padding:2px 8px">${meta.comment}</td></tr>`:''}
       </table>
     </div>
-    ${meta.delivery?`<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-weight:700;color:#15803d">🚚 Livraison souhaitée avant le : ${meta.delivery}</div>`:''}
+    ${meta.delivery?`<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-weight:700;color:#15803d">${t('pdf.deliveryBox',meta.delivery)}</div>`:''}
     <table style="width:100%;border-collapse:collapse;font-size:11px">
       <thead><tr style="background:#1a1a2e;color:#fff">
-        <th style="padding:8px;text-align:center">#</th><th style="padding:8px;text-align:center">Photo</th>
-        <th style="padding:8px">Réf. SF</th><th style="padding:8px">Description</th>
-        <th style="padding:8px">Fournisseur</th><th style="padding:8px;text-align:center">Qté</th>
+        <th style="padding:8px;text-align:center">#</th><th style="padding:8px;text-align:center">${t('pdf.colPhoto')}</th>
+        <th style="padding:8px">${t('pdf.colSf')}</th><th style="padding:8px">${t('pdf.colDesc')}</th>
+        <th style="padding:8px">${t('pdf.colSup')}</th><th style="padding:8px;text-align:center">${t('pdf.colQty')}</th>
       </tr></thead><tbody>${rows}</tbody>
       <tfoot><tr style="background:#1a1a2e;color:#fff">
-        <td colspan="5" style="padding:8px;text-align:right;font-weight:bold">Total — ${meta.lines||cart.length} ligne(s)</td>
+        <td colspan="5" style="padding:8px;text-align:right;font-weight:bold">${t('pdf.totalRow',meta.lines||cart.length)}</td>
         <td style="padding:8px;text-align:center;font-weight:900;font-size:15px">${meta.totalQty}</td>
       </tr></tfoot>
     </table>
-    <div style="margin-top:18px;font-size:10px;color:#999;border-top:1px solid #e2e4ec;padding-top:8px">Généré le ${new Date().toLocaleString('fr-FR')}</div>
+    <div style="margin-top:18px;font-size:10px;color:#999;border-top:1px solid #e2e4ec;padding-top:8px">${t('pdf.genShort',new Date().toLocaleString(locale))}</div>
     </body></html>`);
   win.document.close();setTimeout(()=>{win.focus();win.print();},300);
   saveToHistory(meta,[...cart]);
@@ -1281,49 +1293,226 @@ function setProgress(label,pct){document.getElementById('progressWrap').classLis
 
 async function sendEmail(){
   const to=document.getElementById('emailTo').value.trim();
-  if(!to){alert('Email destinataire requis.');return;}
+  if(!to){alert(t('email.toRequired'));return;}
   const btn=document.getElementById('btnSendEmail'),cancelBtn=document.getElementById('btnCancelEmail');
   btn.classList.add('loading');btn.disabled=true;cancelBtn.disabled=true;
   const meta=buildPOMeta();
   try{
-    setProgress('Génération du PDF…',15);await new Promise(r=>setTimeout(r,50));
-    setProgress('Construction du tableau…',40);await new Promise(r=>setTimeout(r,50));
+    setProgress(t('email.gen'),15);await new Promise(r=>setTimeout(r,50));
+    setProgress(t('email.build'),40);await new Promise(r=>setTimeout(r,50));
     const doc=await generatePDF(meta);
-    setProgress('Finalisation…',80);await new Promise(r=>setTimeout(r,100));
-    const pdfFileName=`bon_commande_${meta.num}.pdf`;
+    setProgress(t('email.final'),80);await new Promise(r=>setTimeout(r,100));
+    const pdfFileName=`${LANG==='fr'?'bon_commande':'purchase_order'}_${meta.num}.pdf`;
     doc.save(pdfFileName);
-    setProgress('Ouverture du mail…',95);await new Promise(r=>setTimeout(r,300));
+    setProgress(t('email.opening'),95);await new Promise(r=>setTimeout(r,300));
     const cc=document.getElementById('emailCc').value.trim();
     const extraMsg=document.getElementById('emailMsg').value.trim();
-    let body=`Bonjour,\n\nVeuillez trouver en pièce jointe le bon de commande ${meta.num}.\n\n`;
-    if(extraMsg)body+=extraMsg+'\n\n';
-    body+=`RÉCAPITULATIF\n${'─'.repeat(40)}\nN° : ${meta.num}\nMagasin : ${meta.store}\nDate : ${meta.date}\nPar : ${meta.by}\n`;
-    if(meta.delivery)body+=`🚚 Livraison souhaitée : ${meta.delivery}\n`;
-    if(meta.comment)body+=`Note : ${meta.comment}\n`;
-    body+=`\nARTICLES (${cart.length} lignes / ${meta.totalQty} unités)\n${'─'.repeat(40)}\n`;
-    cart.forEach((item,idx)=>{
-      body+=`${String(idx+1).padStart(2,'0')}. ${item.description}`;
-      if(item.item_number)body+=` [SF:${item.item_number}]`;
-      if(item.supplier)body+=` | ${item.supplier}`;
-      body+=` → Qté: ${item.qty}\n`;
-    });
-    body+=`\n📎 "${pdfFileName}" téléchargé — à joindre avant envoi.\n\nCordialement,\n${meta.by}`;
-    const params=[`subject=${encodeURIComponent('Bon de commande '+meta.num+' — '+meta.store)}`,`body=${encodeURIComponent(body)}`];
+    let body,subject;
+    if(LANG==='fr'){
+      body=`Bonjour,\n\nVeuillez trouver en pièce jointe le bon de commande ${meta.num}.\n\n`;
+      if(extraMsg)body+=extraMsg+'\n\n';
+      body+=`RÉCAPITULATIF\n${'─'.repeat(40)}\nN° : ${meta.num}\nMagasin : ${meta.store}\nDate : ${meta.date}\nPar : ${meta.by}\n`;
+      if(meta.delivery)body+=`🚚 Livraison souhaitée : ${meta.delivery}\n`;
+      if(meta.comment)body+=`Note : ${meta.comment}\n`;
+      body+=`\nARTICLES (${cart.length} ligne${cart.length>1?'s':''} / ${meta.totalQty} unité${meta.totalQty>1?'s':''})\n${'─'.repeat(40)}\n`;
+      cart.forEach((item,idx)=>{
+        body+=`${String(idx+1).padStart(2,'0')}. ${item.description}`;
+        if(item.item_number)body+=` [SF:${item.item_number}]`;
+        if(item.supplier)body+=` | ${item.supplier}`;
+        body+=` → Qté: ${item.qty}\n`;
+      });
+      body+=`\n📎 "${pdfFileName}" téléchargé — à joindre avant envoi.\n\nCordialement,\n${meta.by}`;
+      subject='Bon de commande '+meta.num+' — '+meta.store;
+    } else {
+      body=`Hello,\n\nPlease find attached purchase order ${meta.num}.\n\n`;
+      if(extraMsg)body+=extraMsg+'\n\n';
+      body+=`SUMMARY\n${'─'.repeat(40)}\nNo. : ${meta.num}\nStore : ${meta.store}\nDate : ${meta.date}\nBy : ${meta.by}\n`;
+      if(meta.delivery)body+=`🚚 Requested delivery : ${meta.delivery}\n`;
+      if(meta.comment)body+=`Note : ${meta.comment}\n`;
+      body+=`\nITEMS (${cart.length} line${cart.length>1?'s':''} / ${meta.totalQty} unit${meta.totalQty>1?'s':''})\n${'─'.repeat(40)}\n`;
+      cart.forEach((item,idx)=>{
+        body+=`${String(idx+1).padStart(2,'0')}. ${item.description}`;
+        if(item.item_number)body+=` [SF:${item.item_number}]`;
+        if(item.supplier)body+=` | ${item.supplier}`;
+        body+=` → Qty: ${item.qty}\n`;
+      });
+      body+=`\n📎 "${pdfFileName}" downloaded — please attach it before sending.\n\nBest regards,\n${meta.by}`;
+      subject='Purchase Order '+meta.num+' — '+meta.store;
+    }
+    const params=[`subject=${encodeURIComponent(subject)}`,`body=${encodeURIComponent(body)}`];
     if(cc)params.push(`cc=${encodeURIComponent(cc)}`);
     window.location.href=`mailto:${encodeURIComponent(to)}?`+params.join('&');
-    setProgress('✅ Terminé !',100);await new Promise(r=>setTimeout(r,800));
+    setProgress(t('email.done'),100);await new Promise(r=>setTimeout(r,800));
     saveToHistory(meta,[...cart]);
-    closeEmailModal();toast('✅ PDF téléchargé + mail ouvert !');
-  }catch(e){console.error(e);alert('Erreur PDF : '+e.message);}
+    closeEmailModal();toast(t('email.success'));
+  }catch(e){console.error(e);alert(t('email.error')+e.message);}
   finally{btn.classList.remove('loading');btn.disabled=false;cancelBtn.disabled=false;document.getElementById('progressWrap').classList.remove('show');document.getElementById('progressFill').style.width='0';}
 }
 
 function toast(msg,bg='#16a34a'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=bg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
 
+/* ═══════════ I18N — SÉLECTEUR DE LANGUE FR / EN ═══════════ */
+const T={
+  fr:{
+    'doc.title':'Store Fixtures — Bon de Commande',
+    'logo.sub':'Système d\'achat',
+    'nav.history':'Historique','nav.manage':'Gérer la base','nav.order':'Commande',
+    'side.categories':'Catégories','side.showAll':'Tout afficher','side.clearFilters':'Effacer filtres',
+    'main.search':'🔍 Rechercher…','main.allSuppliers':'Tous fournisseurs','main.noItems':'Aucun article trouvé',
+    'col.photo':'Photo','col.sfRef':'Réf. SF','col.desc':'Description','col.supplier':'Fournisseur',
+    'col.supRef':'Réf. Fourn.','col.orderedBy':'Cmd par','col.category':'Catégorie','col.stockMin':'⚠️ Stock min','col.qty':'Qté',
+    'btn.add':'+ Ajouter','btn.added':'✓ Ajouté',
+    'res.items':n=>`${n} article${n!==1?'s':''}`,
+    'hist.title':'📜 Historique des commandes','hist.empty':'Aucune commande dans l\'historique.',
+    'hist.emptyHint':'Les bons envoyés ou imprimés apparaîtront ici.',
+    'hist.orders':n=>`${n} commande${n>1?'s':''}`,
+    'hist.reprint':'🖨 Réimprimer','hist.reload':'↺ Recharger panier','hist.delete':'🗑 Supprimer',
+    'hist.clearAll':'🗑 Tout effacer','hist.confirmClear':'Effacer tout l\'historique ?',
+    'hist.orderedOn':'Commandé le','hist.by':'par','hist.more':(n)=>`▾ +${n} article${n>1?'s':''}…`,
+    'hist.reloaded':num=>`↺ Commande ${num} rechargée dans le panier !`,
+    'admin.title':'Gestion de la base','admin.subtitle':'Ajouter, modifier, supprimer',
+    'admin.tabAdd':'➕ Ajouter','admin.tabManage':'📋 Gérer','admin.newItem':'✨ Nouvel article',
+    'admin.category':'Catégorie *','admin.newCat':'Nouvelle catégorie','admin.orderedBy':'Commandé par',
+    'admin.choose':'— Choisir —','admin.createCat':'Créer…','admin.desc':'Description *','admin.descPh':'Nom de l\'article',
+    'admin.sfRef':'Réf. Store Fixture','admin.supplier':'Fournisseur','admin.supRef':'Réf. Fournisseur',
+    'admin.photo':'Photo','admin.clickChoose':'choisir','admin.clickTo':'Cliquer pour',
+    'admin.reset':'Réinitialiser','admin.add':'✅ Ajouter','admin.searchPh':'Rechercher…',
+    'admin.all':'Toutes','admin.colDesc':'Description','admin.colRef':'Réf.','admin.colCat':'Catégorie',
+    'admin.colSup':'Fournisseur','admin.colStock':'Stock min',
+    'admin.statItems':(n,t)=>`${n} article${n!==1?'s':''} / ${t} total`,
+    'admin.descRequired':'⚠️ Description obligatoire','admin.catRequired':'⚠️ Catégorie obligatoire',
+    'admin.added':d=>`✅ "${d}" ajouté !`,'admin.modified':'✅ Article modifié !',
+    'del.title':'Supprimer cet article ?','del.desc':d=>`"${d}" sera supprimé définitivement.`,
+    'del.cancel':'Annuler','del.confirm':'Supprimer','del.done':d=>`🗑️ "${d}" supprimé.`,
+    'cart.title':'📋 Bon de commande','cart.store':'Magasin','cart.date':'Date commande',
+    'cart.orderedBy':'Commandé par','cart.num':'N° commande','cart.delivery':'🚚 Livraison souhaitée',
+    'cart.comment':'Commentaire','cart.empty':'Panier vide — ajoutez des articles.',
+    'cart.storePh':'NORMAL Paris…','cart.namePh':'Nom','cart.numPh':'Auto','cart.notesPh':'Notes…',
+    'cart.total':'Total','cart.lines':'ligne(s)','cart.units':'unités',
+    'cart.print':'Imprimer','cart.email':'Mail',
+    'cart.qtyUpdated':'Quantité mise à jour !','cart.added':'Article ajouté !',
+    'email.title':'✉️ Envoyer par mail','email.to':'Destinataire *','email.cc':'Copie (CC)','email.msg':'Message',
+    'email.toPh':'commandes@centrale-achat.com','email.ccPh':'responsable@magasin.com','email.msgPh':'Livraison avant le…',
+    'email.info':'📎 Le PDF sera téléchargé automatiquement. Votre client mail s\'ouvrira avec le récapitulatif pré-rempli.',
+    'email.cancel':'Annuler','email.send':'Générer PDF et envoyer','email.toRequired':'Email destinataire requis.',
+    'email.gen':'Génération du PDF…','email.build':'Construction du tableau…','email.final':'Finalisation…',
+    'email.opening':'Ouverture du mail…','email.done':'✅ Terminé !','email.success':'✅ PDF téléchargé + mail ouvert !',
+    'email.error':'Erreur PDF : ',
+    'stock.title':'Stock minimum','stock.defined':'Stock minimum défini',
+    'pdf.title':'BON DE COMMANDE','pdf.subtitle':'Store Fixtures — Centrale d\'Achat',
+    'pdf.orderNo':'N° de commande','pdf.store':'Magasin','pdf.orderDate':'Date commande',
+    'pdf.orderedBy':'Commandé par','pdf.delivery':'Livraison souhaitée','pdf.comment':'Commentaire',
+    'pdf.colSf':'Réf. SF','pdf.colDesc':'Description','pdf.colSup':'Fournisseur','pdf.colSupRef':'Réf. Fourn.',
+    'pdf.colOrd':'Cmd par','pdf.colQty':'Qté','pdf.colPhoto':'Photo',
+    'pdf.total':(l,u)=>`TOTAL : ${l} ligne${l>1?'s':''}  —  ${u} unité${u>1?'s':''}`,
+    'pdf.ref':num=>`Réf. ${num}`,'pdf.deliveryFoot':d=>`🚚 Livraison souhaitée : ${d}`,
+    'pdf.deliveryBox':d=>`🚚 Livraison souhaitée avant le : ${d}`,
+    'pdf.totalRow':l=>`Total — ${l} ligne${l>1?'s':''}`,
+    'pdf.gen':d=>`Généré le ${d} — Store Fixtures Order Management System`,
+    'pdf.genShort':d=>`Généré le ${d}`,'pdf.reprinted':d=>`Réimprimé le ${d}`,
+    'pdf.deliveryShort':'🚚 Livraison','pdf.note':'Note','pdf.no':'N°','pdf.by':'Par','pdf.date':'Date',
+    'mail.hello':'Bonjour,','mail.intro':num=>`Veuillez trouver en pièce jointe le bon de commande ${num}.`,
+    'mail.summary':'RÉCAPITULATIF','mail.items':(l,u)=>`ARTICLES (${l} ligne${l>1?'s':''} / ${u} unité${u>1?'s':''})`,
+    'mail.qty':'Qté','mail.attached':f=>`📎 "${f}" téléchargé — à joindre avant envoi.`,
+    'mail.regards':'Cordialement,','mail.subject':(num,store)=>`Bon de commande ${num} — ${store}`,
+    'mail.delivery':d=>`🚚 Livraison souhaitée : ${d}`
+  },
+  en:{
+    'doc.title':'Store Fixtures — Purchase Order',
+    'logo.sub':'Purchasing System',
+    'nav.history':'History','nav.manage':'Manage database','nav.order':'Order',
+    'side.categories':'Categories','side.showAll':'Show all','side.clearFilters':'Clear filters',
+    'main.search':'🔍 Search…','main.allSuppliers':'All suppliers','main.noItems':'No item found',
+    'col.photo':'Photo','col.sfRef':'SF Ref.','col.desc':'Description','col.supplier':'Supplier',
+    'col.supRef':'Sup. Ref.','col.orderedBy':'Ord. by','col.category':'Category','col.stockMin':'⚠️ Min stock','col.qty':'Qty',
+    'btn.add':'+ Add','btn.added':'✓ Added',
+    'res.items':n=>`${n} item${n!==1?'s':''}`,
+    'hist.title':'📜 Order history','hist.empty':'No order in history.',
+    'hist.emptyHint':'Sent or printed orders will appear here.',
+    'hist.orders':n=>`${n} order${n>1?'s':''}`,
+    'hist.reprint':'🖨 Reprint','hist.reload':'↺ Reload cart','hist.delete':'🗑 Delete',
+    'hist.clearAll':'🗑 Clear all','hist.confirmClear':'Clear all history?',
+    'hist.orderedOn':'Ordered on','hist.by':'by','hist.more':(n)=>`▾ +${n} item${n>1?'s':''}…`,
+    'hist.reloaded':num=>`↺ Order ${num} reloaded into cart!`,
+    'admin.title':'Database management','admin.subtitle':'Add, edit, delete',
+    'admin.tabAdd':'➕ Add','admin.tabManage':'📋 Manage','admin.newItem':'✨ New item',
+    'admin.category':'Category *','admin.newCat':'New category','admin.orderedBy':'Ordered by',
+    'admin.choose':'— Choose —','admin.createCat':'Create…','admin.desc':'Description *','admin.descPh':'Item name',
+    'admin.sfRef':'Store Fixture Ref.','admin.supplier':'Supplier','admin.supRef':'Supplier Ref.',
+    'admin.photo':'Photo','admin.clickChoose':'choose','admin.clickTo':'Click to',
+    'admin.reset':'Reset','admin.add':'✅ Add','admin.searchPh':'Search…',
+    'admin.all':'All','admin.colDesc':'Description','admin.colRef':'Ref.','admin.colCat':'Category',
+    'admin.colSup':'Supplier','admin.colStock':'Min stock',
+    'admin.statItems':(n,t)=>`${n} item${n!==1?'s':''} / ${t} total`,
+    'admin.descRequired':'⚠️ Description required','admin.catRequired':'⚠️ Category required',
+    'admin.added':d=>`✅ "${d}" added!`,'admin.modified':'✅ Item updated!',
+    'del.title':'Delete this item?','del.desc':d=>`"${d}" will be permanently deleted.`,
+    'del.cancel':'Cancel','del.confirm':'Delete','del.done':d=>`🗑️ "${d}" deleted.`,
+    'cart.title':'📋 Purchase order','cart.store':'Store','cart.date':'Order date',
+    'cart.orderedBy':'Ordered by','cart.num':'Order No.','cart.delivery':'🚚 Requested delivery',
+    'cart.comment':'Comment','cart.empty':'Cart is empty — add items.',
+    'cart.storePh':'NORMAL Paris…','cart.namePh':'Name','cart.numPh':'Auto','cart.notesPh':'Notes…',
+    'cart.total':'Total','cart.lines':'line(s)','cart.units':'units',
+    'cart.print':'Print','cart.email':'Email',
+    'cart.qtyUpdated':'Quantity updated!','cart.added':'Item added!',
+    'email.title':'✉️ Send by email','email.to':'Recipient *','email.cc':'Copy (CC)','email.msg':'Message',
+    'email.toPh':'orders@central-purchasing.com','email.ccPh':'manager@store.com','email.msgPh':'Delivery before…',
+    'email.info':'📎 The PDF will be downloaded automatically. Your mail client will open with a pre-filled summary.',
+    'email.cancel':'Cancel','email.send':'Generate PDF and send','email.toRequired':'Recipient email required.',
+    'email.gen':'Generating PDF…','email.build':'Building table…','email.final':'Finalizing…',
+    'email.opening':'Opening mail client…','email.done':'✅ Done!','email.success':'✅ PDF downloaded + mail opened!',
+    'email.error':'PDF error: ',
+    'stock.title':'Minimum stock','stock.defined':'Minimum stock set',
+    'pdf.title':'PURCHASE ORDER','pdf.subtitle':'Store Fixtures — Central Purchasing',
+    'pdf.orderNo':'Order No.','pdf.store':'Store','pdf.orderDate':'Order date',
+    'pdf.orderedBy':'Ordered by','pdf.delivery':'Requested delivery','pdf.comment':'Comment',
+    'pdf.colSf':'SF Ref.','pdf.colDesc':'Description','pdf.colSup':'Supplier','pdf.colSupRef':'Supplier Ref.',
+    'pdf.colOrd':'Ordered by','pdf.colQty':'Qty','pdf.colPhoto':'Photo',
+    'pdf.total':(l,u)=>`TOTAL : ${l} line${l>1?'s':''}  —  ${u} unit${u>1?'s':''}`,
+    'pdf.ref':num=>`Ref. ${num}`,'pdf.deliveryFoot':d=>`🚚 Requested delivery : ${d}`,
+    'pdf.deliveryBox':d=>`🚚 Requested delivery by: ${d}`,
+    'pdf.totalRow':l=>`Total — ${l} line${l>1?'s':''}`,
+    'pdf.gen':d=>`Generated on ${d} — Store Fixtures Order Management System`,
+    'pdf.genShort':d=>`Generated on ${d}`,'pdf.reprinted':d=>`Reprinted on ${d}`,
+    'pdf.deliveryShort':'🚚 Delivery','pdf.note':'Note','pdf.no':'No.','pdf.by':'By','pdf.date':'Date',
+    'mail.hello':'Hello,','mail.intro':num=>`Please find attached purchase order ${num}.`,
+    'mail.summary':'SUMMARY','mail.items':(l,u)=>`ITEMS (${l} line${l>1?'s':''} / ${u} unit${u>1?'s':''})`,
+    'mail.qty':'Qty','mail.attached':f=>`📎 "${f}" downloaded — please attach it before sending.`,
+    'mail.regards':'Best regards,','mail.subject':(num,store)=>`Purchase Order ${num} — ${store}`,
+    'mail.delivery':d=>`🚚 Requested delivery : ${d}`
+  }
+};
+let LANG=localStorage.getItem('sf_lang')||'fr';
+function t(key,...args){
+  const v=(T[LANG]&&T[LANG][key]!==undefined)?T[LANG][key]:(T.fr[key]!==undefined?T.fr[key]:key);
+  return typeof v==='function'?v(...args):v;
+}
+function applyLang(){
+  document.documentElement.lang=LANG;
+  document.title=t('doc.title');
+  document.getElementById('langLabel').textContent=LANG.toUpperCase();
+  // Static elements with data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.textContent=t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    el.placeholder=t(el.getAttribute('data-i18n-ph'));
+  });
+  // Re-render dynamic parts
+  rebuildSidebar();rebuildSupFilter();applyFilters();renderCart();
+  if(document.getElementById('adminOverlay').classList.contains('open')){populateAdminCats();renderDbTable();}
+  if(document.getElementById('historyOverlay').classList.contains('open')){renderHistory();}
+}
+function toggleLang(){
+  LANG=(LANG==='fr')?'en':'fr';
+  localStorage.setItem('sf_lang',LANG);
+  applyLang();
+}
+
 /* ── INIT ── */
 document.getElementById('orderDate').valueAsDate=new Date();
 DB.forEach((_,i)=>{qtys[i]=1;});
-rebuildSidebar();rebuildSupFilter();applyFilters();
+applyLang();
 </script>
 </body>
 </html>
