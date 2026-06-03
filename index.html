@@ -599,6 +599,9 @@ td{padding:7px 10px;font-size:12px;vertical-align:middle}
     <div class="email-field"><label data-i18n="email.msg">Message</label>
       <textarea id="emailMsg" data-i18n-ph="email.msgPh" placeholder="Livraison avant le…"></textarea></div>
     <div class="info-box" data-i18n="email.info">📎 Le PDF sera téléchargé automatiquement. Votre client mail s'ouvrira avec le récapitulatif pré-rempli.</div>
+    <div style="text-align:right;margin-top:-4px;margin-bottom:4px">
+      <button onclick="clearMemoFields()" style="background:none;border:none;color:var(--muted);font-family:'Syne',sans-serif;font-size:11px;cursor:pointer;text-decoration:underline;opacity:.7" data-i18n="memo.clear">Effacer les infos mémorisées</button>
+    </div>
     <div class="progress-wrap" id="progressWrap">
       <div class="progress-label" id="progressLabel">Initialisation…</div>
       <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
@@ -846,7 +849,7 @@ function renderCart(){
   document.getElementById('totalLines').textContent=cart.length;
   document.getElementById('totalQty').textContent=totalQty;
 }
-function toggleCart(){document.getElementById('cartOverlay').classList.toggle('open');}
+function toggleCart(){const o=document.getElementById('cartOverlay');o.classList.toggle('open');if(o.classList.contains('open'))restoreMemoFields();}
 document.getElementById('cartOverlay').addEventListener('click',function(e){if(e.target===this)toggleCart();});
 
 /* ── HISTORIQUE ── */
@@ -1286,7 +1289,7 @@ function doPrint(){
   saveToHistory(meta,[...cart]);
 }
 
-function openEmailModal(){document.getElementById('emailOverlay').classList.add('open');}
+function openEmailModal(){restoreMemoFields();document.getElementById('emailOverlay').classList.add('open');}
 function closeEmailModal(){if(document.getElementById('btnSendEmail').disabled)return;document.getElementById('emailOverlay').classList.remove('open');}
 document.getElementById('emailOverlay').addEventListener('click',function(e){if(e.target===this)closeEmailModal();});
 function setProgress(label,pct){document.getElementById('progressWrap').classList.add('show');document.getElementById('progressLabel').textContent=label;document.getElementById('progressFill').style.width=pct+'%';}
@@ -1294,6 +1297,7 @@ function setProgress(label,pct){document.getElementById('progressWrap').classLis
 async function sendEmail(){
   const to=document.getElementById('emailTo').value.trim();
   if(!to){alert(t('email.toRequired'));return;}
+  saveMemoFields();
   const btn=document.getElementById('btnSendEmail'),cancelBtn=document.getElementById('btnCancelEmail');
   btn.classList.add('loading');btn.disabled=true;cancelBtn.disabled=true;
   const meta=buildPOMeta();
@@ -1398,6 +1402,8 @@ const T={
     'email.gen':'Génération du PDF…','email.build':'Construction du tableau…','email.final':'Finalisation…',
     'email.opening':'Ouverture du mail…','email.done':'✅ Terminé !','email.success':'✅ PDF téléchargé + mail ouvert !',
     'email.error':'Erreur PDF : ',
+    'memo.saved':'💾 Infos mémorisées (destinataire, magasin…) pré-remplies automatiquement.',
+    'memo.clear':'Effacer les infos mémorisées','memo.cleared':'🗑️ Infos mémorisées effacées.',
     'stock.title':'Stock minimum','stock.defined':'Stock minimum défini',
     'pdf.title':'BON DE COMMANDE','pdf.subtitle':'Store Fixtures — Centrale d\'Achat',
     'pdf.orderNo':'N° de commande','pdf.store':'Magasin','pdf.orderDate':'Date commande',
@@ -1462,6 +1468,8 @@ const T={
     'email.gen':'Generating PDF…','email.build':'Building table…','email.final':'Finalizing…',
     'email.opening':'Opening mail client…','email.done':'✅ Done!','email.success':'✅ PDF downloaded + mail opened!',
     'email.error':'PDF error: ',
+    'memo.saved':'💾 Saved info (recipient, store…) auto-filled.',
+    'memo.clear':'Clear saved info','memo.cleared':'🗑️ Saved info cleared.',
     'stock.title':'Minimum stock','stock.defined':'Minimum stock set',
     'pdf.title':'PURCHASE ORDER','pdf.subtitle':'Store Fixtures — Central Purchasing',
     'pdf.orderNo':'Order No.','pdf.store':'Store','pdf.orderDate':'Order date',
@@ -1509,9 +1517,46 @@ function toggleLang(){
   applyLang();
 }
 
+/* ── MÉMORISATION DES SAISIES RÉCURRENTES ──
+   Sauvegarde locale des champs qui reviennent souvent (destinataire, magasin, etc.)
+   et pré-remplissage automatique à l'ouverture. */
+const MEMO_FIELDS=['emailTo','emailCc','storeName','orderedBy'];
+function restoreMemoFields(){
+  let saved={};
+  try{saved=JSON.parse(localStorage.getItem('sf_memo')||'{}');}catch(e){saved={};}
+  MEMO_FIELDS.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && saved[id]) el.value=saved[id];
+  });
+}
+function saveMemoFields(){
+  let saved={};
+  try{saved=JSON.parse(localStorage.getItem('sf_memo')||'{}');}catch(e){saved={};}
+  MEMO_FIELDS.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && el.value.trim()) saved[id]=el.value.trim();
+  });
+  try{localStorage.setItem('sf_memo',JSON.stringify(saved));}catch(e){}
+}
+// Sauvegarde automatique à chaque frappe ET à la sortie du champ (double sécurité)
+MEMO_FIELDS.forEach(id=>{
+  const el=document.getElementById(id);
+  if(el){
+    el.addEventListener('input',saveMemoFields);
+    el.addEventListener('change',saveMemoFields);
+    el.addEventListener('blur',saveMemoFields);
+  }
+});
+function clearMemoFields(){
+  try{localStorage.removeItem('sf_memo');}catch(e){}
+  MEMO_FIELDS.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  toast(t('memo.cleared'),'#ea580c');
+}
+
 /* ── INIT ── */
 document.getElementById('orderDate').valueAsDate=new Date();
 DB.forEach((_,i)=>{qtys[i]=1;});
+restoreMemoFields();
 applyLang();
 </script>
 </body>
