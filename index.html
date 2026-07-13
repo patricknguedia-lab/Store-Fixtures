@@ -851,6 +851,27 @@ function renderCart(){
 function toggleCart(){const o=document.getElementById('cartOverlay');o.classList.toggle('open');if(o.classList.contains('open'))restoreMemoFields();}
 document.getElementById('cartOverlay').addEventListener('click',function(e){if(e.target===this)toggleCart();});
 
+/* ── VIDER LE PANIER (après envoi/impression) ──
+   Retire tous les articles et réinitialise les boutons "Ajouter", sans toucher
+   aux infos mémorisées (magasin, destinataire…). */
+function clearCart(){
+  // Réinitialiser les boutons "Ajouter" des articles qui étaient au panier
+  cart.forEach(c=>{
+    ['addbtn-','caddbtn-'].forEach(p=>{
+      const b=document.getElementById(p+c.idx);
+      if(b){b.textContent=t('btn.add');b.classList.remove('added');}
+    });
+  });
+  cart=[];
+  updateCount();
+  renderCart();
+  // Réinitialiser les champs spécifiques à CETTE commande (pas les infos mémorisées)
+  document.getElementById('orderNum').value='';
+  document.getElementById('deliveryDate').value='';
+  document.getElementById('orderComment').value='';
+  document.getElementById('orderDate').valueAsDate=new Date();
+}
+
 /* ── HISTORIQUE ── */
 function openHistory(){renderHistory();document.getElementById('historyOverlay').classList.add('open');}
 function closeHistory(){document.getElementById('historyOverlay').classList.remove('open');}
@@ -1347,6 +1368,7 @@ async function sendEmail(){
     window.location.href=`mailto:${encodeURIComponent(to)}?`+params.join('&');
     setProgress(t('email.done'),100);await new Promise(r=>setTimeout(r,800));
     saveToHistory(meta,[...cart]);
+    clearCart();
     closeEmailModal();toast(t('email.success'));
   }catch(e){console.error(e);alert(t('email.error')+e.message);}
   finally{btn.classList.remove('loading');btn.disabled=false;cancelBtn.disabled=false;document.getElementById('progressWrap').classList.remove('show');document.getElementById('progressFill').style.width='0';}
